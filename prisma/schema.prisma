@@ -10,19 +10,18 @@ datasource db {
   url      = "file:./data.db"
 }
 
-model User {
-  id       Int     @id @default(autoincrement())
-  fullName String
-  photo    String
-  email    String
-  hobby    Hobby[]
+model Users {
+  id       Int       @id @default(autoincrement())
+  fullName String    @unique
+  photo    String?
+  email    String?
+  hobbies  Hobbies[]
 }
 
-model Hobby {
-  id     Int     @id @default(autoincrement())
-  name   String
-  photo  String
-  active Boolean @default(true)
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId Int
+model Hobbies {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  photo  String?
+  active Boolean? @default(true)
+  users  Users[]
 }
