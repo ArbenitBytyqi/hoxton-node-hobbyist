@@ -28,8 +28,29 @@ app.get('/users/:id', async (req, res) => {
 })
 
 app.post('/users', async (req, res) => {
+    const userData = { 
+        fullName: req.body.fullName,
+        photo: req.body.photo,
+        email: req.body.email,
+        hobbies: req.body.hobbies? req.body.hobbies:[]
+     }
     const user = await prisma.users.create({ 
-        data: req.body, 
+        data: { 
+            fullName: userData.fullName,
+            photo: userData.photo,
+            email: userData.email,
+            hobbies: { 
+                //@ts-ignore
+                connectOrCreate: userData.hobbies.map(hobby => ({
+                    where: { 
+                        name: hobby
+                     },
+                    create: { 
+                        name: hobby
+                     } 
+                }))
+             }
+         },
         include: { hobbies: true } })
     res.send(user)
 })
