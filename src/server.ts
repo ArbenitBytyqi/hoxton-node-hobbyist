@@ -85,10 +85,31 @@ app.get ('/hobbies/:id', async (req, res) => {
 })
 
 app.post('/hobbies', async (req, res) => {
+    const hobbyData = { 
+        name: req.body.name,
+        photo: req.body.photo,
+        active: req.body.active,
+        users: req.body.users? req.body.users:[]
+     }
     const hobby = await prisma.hobbies.create({ 
-        data: req.body,
-        include: { users: true }
-    })
+        data: { 
+            name: hobbyData.name,
+            photo: hobbyData.photo,
+            active: hobbyData.active,
+            users: { 
+                //@ts-ignore
+                connectOrCreate: hobbyData.users.map(user => ({
+                    where: { 
+                        fullName: user
+
+                     },
+                    create: { 
+                        fullName: user
+                     } 
+                }))
+             }
+         },
+        include: { users: true } })
     res.send(hobby)
 })
 
